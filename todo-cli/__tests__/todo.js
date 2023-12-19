@@ -1,96 +1,58 @@
-function todoList() {
-    let all = [];
-  
-    function add(todoItem) {
-      all.push(todoItem);
-    }
-  
-    function markAsComplete(index) {
-      all[index].completed = true;
-    }
-  
-    function overdue() {
-      return all.filter(
-        (item) => item.dueDate < new Date().toLocaleDateString("en-CA")
-      );
-    }
-  
-    function dueToday() {
-      return all.filter(
-        (item) => item.dueDate == new Date().toLocaleDateString("en-CA")
-      );
-    }
-  
-    function dueLater() {
-      return all.filter(
-        (item) => item.dueDate > new Date().toLocaleDateString("en-CA")
-      );
-    }
-  
-    function toDisplayableList(list) {
-      let opArray = list.map(
-        (item) =>
-          `${item.completed ? "[x]" : "[ ]"} ${item.title} ${
-            item.dueDate === new Date().toLocaleDateString("en-CA")
-              ? ""
-              : item.dueDate
-          }`
-      );
-  
-      let str = String(opArray);
-      str = str.replace(",", "\n");
-      return str;
-    }
-  
-    return {
-      all,
-      add,
-      markAsComplete,
-      overdue,
-      dueToday,
-      dueLater,
-      toDisplayableList,
-    };
-  }
-  
-  const todos = todoList();
-  
-  function formattedDate(d) {
-    return d.toISOString().split("T")[0];
-  }
-  
-  let dateToday = new Date();
-  const today = formattedDate(dateToday);
-  const yesterday = formattedDate(
-    new Date(new Date().setDate(dateToday.getDate() - 1))
-  );
-  const tomorrow = formattedDate(
-    new Date(new Date().setDate(dateToday.getDate() + 1))
-  );
-  
-  todos.add({ title: "Submit assignment", dueDate: yesterday, completed: false });
-  todos.add({ title: "Pay rent", dueDate: today, completed: true });
-  todos.add({ title: "Service Vehicle", dueDate: today, completed: false });
-  todos.add({ title: "File taxes", dueDate: tomorrow, completed: false });
-  todos.add({ title: "Pay electric bill", dueDate: tomorrow, completed: false });
-  
-  console.log("My Todo-list\n");
-  
-  console.log("Overdue");
-  let overdues = todos.overdue();
-  let formattedOverdues = todos.toDisplayableList(overdues);
-  console.log(formattedOverdues);
-  console.log("\n");
-  
-  console.log("Due Today");
-  let itemsDueToday = todos.dueToday();
-  let formattedItemsDueToday = todos.toDisplayableList(itemsDueToday);
-  console.log(formattedItemsDueToday);
-  console.log("\n");
-  
-  console.log("Due Later");
-  let itemsDueLater = todos.dueLater();
-  let formattedItemsDueLater = todos.toDisplayableList(itemsDueLater);
-  console.log(formattedItemsDueLater);
-  console.log("\n\n");
-  
+const todoList = require("../todo");
+
+const { all, markAsComplete, add, overdue, dueToday, dueLater } = todoList();
+
+describe("To do list test suits", () => {
+    beforeAll(() => {
+        const todayDate = new Date();
+        const oneDay = 86400 * 1000;
+        const lastDate = new Date(todayDate.getTime() - oneDay);
+        const nextDate = new Date(todayDate.getTime() + oneDay);
+
+        const today = todayDate.toLocaleDateString("en-CA");
+        const lastday = lastDate.toLocaleDateString("en-CA");
+        const nextDay = nextDate.toLocaleDateString("en-CA");
+
+        add({ title: "Sessionals", dueDate: lastday, completed: false });
+        add({ title: "Late Fee Pending", dueDate: today, completed: true });
+        add({ title: "Random job", dueDate: nextDay, completed: true });
+        add({ title: "DSA", dueDate: nextDay, completed: false });
+    });
+
+    test("should add new todo", () => {
+        const todoItemCount = all.length;
+        add({ title: "Pata Nahi", completed: false, dueDate: new Date().toLocaleDateString("en-CA") });
+        expect(all.length).toBe(todoItemCount + 1);
+    });
+
+    test("Should markAsComplete", () => {
+        markAsComplete(0);
+        expect(all[0].completed).toBe(true);
+    });
+
+    test("Overdue items", () => {
+        const today = new Date();
+        const oneDay = 86400 * 1000;
+        const oldOverdueItems = overdue();
+        add({ title: "Overdue", completed: true, dueDate: new Date(today.getTime() - 2 * oneDay).toLocaleDateString("en-CA") });
+        const overdueItems = overdue();
+        expect(overdueItems.length).toBe(oldOverdueItems.length + 1);
+    });
+
+    test("Due today items", () => {
+        const today = new Date();
+        const oldTodaysItems = dueToday();
+        add({ title: "Today", completed: false, dueDate: new Date(today.getTime()).toLocaleDateString("en-CA") });
+        const todayItems = dueToday();
+        expect(todayItems.length).toBe(oldTodaysItems.length + 1);
+    });
+
+    test("Due later items", () => {
+        const today = new Date();
+        const oneDay = 86400 * 1000;
+        const oldDueLaterItems = dueLater();
+        add({ title: "Later", completed: true, dueDate: new Date(today.getTime() + 2 * oneDay).toLocaleDateString("en-CA") });
+        const dueLaterItems = dueLater();
+        expect(dueLaterItems.length).toBe(oldDueLaterItems.length + 1);
+    });
+});
