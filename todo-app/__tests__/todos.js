@@ -1,5 +1,5 @@
+"use strict";
 const request = require("supertest");
-
 const db = require("../models/index");
 const app = require("../app");
 
@@ -17,7 +17,7 @@ describe("Todo Application", function () {
       await db.sequelize.close();
       await server.close();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   });
 
@@ -72,6 +72,16 @@ describe("Todo Application", function () {
   });
 
   test("Deletes a todo with the given ID if it exists and sends a boolean response", async () => {
-    // FILL IN YOUR CODE HERE
+    const response = await agent.post("/todos").send({
+      title: "Temperary Item",
+      dueDate: new Date().toISOString(),
+      completed: false,
+    });
+    const parsed_Response = JSON.parse(response.text);
+    const Insert_ID = parsed_Response.id;
+
+    const delete_response = await agent.delete(`/todos/${Insert_ID}`).send();
+    const flag = Boolean(delete_response.text);
+    expect(flag).toBe(true);
   });
 });
