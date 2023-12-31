@@ -1,87 +1,34 @@
-/* eslint-disable require-jsdoc */
-'use strict';
-const { Model, Op } = require('sequelize');
+"use strict";
+const { Model, DataTypes } = require("sequelize");
 
-module.exports = (sequelize, DataTypes) => {
-  class Todo extends Model {
-    static associate(models) {
-      Todo.belongsTo(models.User, {
-        foreignKey: 'userId'
-      });
-    }
-
-    static addTodo({ title, dueDate, userId }) {
-      return this.create({ title, dueDate, completed: false, userId });
-    }
-
-    static getTodos() {
-      return this.findAll();
-    }
-
-    static async overdue(userId) {
-      return await Todo.findAll({
-        where: {
-          dueDate: { [Op.lt]: new Date().toLocaleDateString("en-CA") },
-          userId,
-          completed: false,
-        },
-      });
-    }
-
-    static async dueToday(userId) {
-      return await Todo.findAll({
-        where: {
-          dueDate: { [Op.eq]: new Date().toLocaleDateString("en-CA") },
-          userId,
-          completed: false,
-        },
-      });
-    }
-
-    static async dueLater(userId) {
-      return await Todo.findAll({
-        where: {
-          dueDate: { [Op.gt]: new Date().toLocaleDateString("en-CA") },
-          userId,
-          completed: false,
-        },
-      });
-    }
-
-    static async remove(id, userId) {
-      return this.destroy({
-        where: {
-          id,
-          userId,
-        },
-      });
-    }
-
-    static async completedItems(userId) {
-      return this.findAll({
-        where: {
-          completed: true,
-          userId,
-        },
-      });
-    }
-
-    setCompletionStatus(receiver) {
-      return this.update({ completed: receiver });
-    }
+class Todo extends Model {
+  static associate(models) {
+    // Define associations here
   }
 
-  Todo.init(
-    {
-      title: DataTypes.STRING,
-      dueDate: DataTypes.DATEONLY,
-      completed: DataTypes.BOOLEAN,
-    },
-    {
-      sequelize,
-      modelName: 'Todo',
-    }
-  );
+  static addTodo({ title, dueDate }) {
+    return this.create({ title, dueDate, completed: false });
+  }
 
-  return Todo;
-};
+  static getTodos() {
+    return this.findAll({ order: [["id", "ASC"]] });
+  }
+
+  markAsCompleted() {
+    return this.update({ completed: true });
+  }
+}
+
+Todo.init(
+  {
+    title: DataTypes.STRING,
+    dueDate: DataTypes.DATEONLY,
+    completed: DataTypes.BOOLEAN,
+  },
+  {
+    sequelize,
+    modelName: "Todo",
+  }
+);
+
+module.exports = Todo;
