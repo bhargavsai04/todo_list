@@ -1,14 +1,15 @@
-/* eslint-disable no-undef */
+"use strict";
+
 const request = require("supertest");
-var cheerio = require("cheerio");
+const cheerio = require("cheerio");
 
 const db = require("../models/index");
 const app = require("../app");
-const { ensureLoggedIn } = require("connect-ensure-login");
 
 let server, agent;
+
 function extractCsrfToken(res) {
-  var $ = cheerio.load(res.text);
+  const $ = cheerio.load(res.text);
   return $("[name=_csrf]").val();
 }
 
@@ -78,7 +79,6 @@ describe("Todo Application", function () {
     await login(agent, "user.a@test.com", "12345678");
     let res = await agent.get("/todos");
     let csrfToken = extractCsrfToken(res);
-    // eslint-disable-next-line no-unused-vars
     const response = await agent.post("/todos").send({
       title: "Buy milk",
       dueDate: new Date().toISOString(),
@@ -156,26 +156,7 @@ describe("Todo Application", function () {
     expect(parsedUpdateResponse1.completed).toBe(false);
   });
 
-  // test("Fetches all todos in the database using /todos endpoint", async () => {
-  //   await agent.post("/todos").send({
-  //     title: "Buy xbox",
-  //     dueDate: new Date().toISOString(),
-  //     completed: false,
-  //   });
-  //   await agent.post("/todos").send({
-  //     title: "Buy ps3",
-  //     dueDate: new Date().toISOString(),
-  //     completed: false,
-  //   });
-  //   const response = await agent.get("/todos");
-  //   const parsedResponse = JSON.parse(response.text);
-
-  //   expect(parsedResponse.length).toBe(4);
-  //   expect(parsedResponse[3]["title"]).toBe("Buy ps3");
-  // });
-
   test("Deletes a todo with the given ID if it exists and sends a boolean response", async () => {
-    // FILL IN YOUR CODE HERE
     const agent = request.agent(server);
     await login(agent, "user.a@test.com", "12345678");
     let res = await agent.get("/todos");

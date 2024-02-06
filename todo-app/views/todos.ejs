@@ -7,6 +7,36 @@
     <link rel="stylesheet" href="./css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>To-Do Manager</title>
+    <style>
+        /* Add custom styles for improved aesthetics */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+        .btn-submit {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            background-color: #45a049;
+        }
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #d32f2f;
+        }
+    </style>
     <script>
         var token = document
         .querySelector('meta[name="csrf-token"]')
@@ -55,13 +85,13 @@
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <div class="flex gap-2 py-4">
                     <div class="flex-auto">
-                        <input type="text" name="title" placeholder="what's next?" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required/>
+                        <input type="text" name="title" placeholder="What's next?" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm" required/>
                     </div>
                     <div class="flex-auto">
                         <input type="date" name="dueDate" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm leading-4" required>
                     </div>
                     <div class="flex-none">
-                        <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">submit</button>
+                        <button type="submit" class="btn-submit">Submit</button>
                     </div>
                 </div>
             </form>
